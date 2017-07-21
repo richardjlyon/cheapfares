@@ -1,48 +1,75 @@
 #!/usr/bin/env ruby
 require 'gli'
-begin # XXX: Remove this begin/rescue before distributing your app
+require 'highline/import'
+require 'ruby-progressbar'
+require 'date'
+require 'json'
+# begin # XXX: Remove this begin/rescue before distributing your app
 require 'cheapfares'
-rescue LoadError
-  STDERR.puts "In development, you need to use `bundle exec bin/cheapfares` to run your app"
-  STDERR.puts "At install-time, RubyGems will make sure lib, etc. are in the load path"
-  STDERR.puts "Feel free to remove this message from bin/cheapfares now"
-  exit 64
-end
+# rescue LoadError
+#   STDERR.puts "In development, you need to use `bundle exec bin/cheapfares` to run your app"
+#   STDERR.puts "At install-time, RubyGems will make sure lib, etc. are in the load path"
+#   STDERR.puts "Feel free to remove this message from bin/cheapfares now"
+#   exit 64
+# end
 
 include GLI::App
 
-program_desc 'Describe your application here'
+DATA_FILEPATH = './prices.json'
+
+program_desc 'A utility for finding cheap rail fares'
 
 version Cheapfares::VERSION
 
 subcommand_option_handling :normal
 arguments :strict
 
-desc 'Describe some switch here'
-switch [:s,:switch]
+accept(Date) do |string|
+  Date.parse(string)
+end
 
 desc 'Describe some flag here'
 default_value 'the default'
 arg_name 'The name of the argument'
 flag [:f,:flagname]
 
-desc 'Describe get here'
-arg_name 'Describe arguments to get here'
-command :get do |c|
-  c.desc 'Describe a switch to get'
-  c.switch :s
+desc 'Update prices'
+long_desc 'Update prices from website'
+arg_name 'Origin, destination, earliest date, weeks to get'
+command :update do |c|
 
-  c.desc 'Describe a flag to get'
-  c.default_value 'default'
-  c.flag :f
+  c.desc "Dry run;don't retrive data"
+  c.switch :dry
+
+  c.flag :d,    :default_value => Date.today,
+                :arg_name => 'date',
+                :type => Date,
+                :desc => 'Travel date'
+  c.flag :f,    :default_value => 'EUS',
+                :arg_name => 'from',
+                :type => String,
+                :desc => 'Originating station'
+  c.flag :t,    :default_value => 'EDB',
+                :arg_name => 'to',
+                :type => String,
+                :desc => 'Destination station'
+  c.flag :w,    :default_value => 12,
+                :arg_name => 'weeks',
+                :type => Integer,
+                :desc => 'Weeks of data to get'
+
   c.action do |global_options,options,args|
 
-    # Your command logic here
-     
-    # If you have any errors, just raise them
-    # raise "that command made no sense"
+    if options[:d] < Date.today
+      raise "Can't get fares earlier than today. Exiting."
+    end
 
-    puts "get command ran"
+    message = "Getting #{options[:w]} weeks of prices for #{options[:f]} to #{options[:t]} from #{options[:d]}. Proceed? (y/n)"
+    exit unless HighLine.agree(message)
+
+    prices = get_prices(origin:options[:f], destination:options[:t], start_date:options[:d], weeks:options[:w])
+    save_prices_to_json(date:options[:d], origin:options[:f], destination:options[:t], prices:prices)
+
   end
 end
 
@@ -73,6 +100,42 @@ on_error do |exception|
   # Error logic here
   # return false to skip default error handling
   true
+end
+
+def get_prices(origin:, destination:, start_date:, weeks:)
+  progressbar = ProgressBar.create(title:"Weeks:", format:"%t |%B| %c", starting_at:0, total:weeks)
+  t = Cheapfares::Trainline.new
+  prices = {}
+  begin
+    (0..weeks-1).each do |week|
+      outward_date = start_date + week * 7
+      # puts "Week #{week+1}: #{outward_date}"
+      t.fetchPricesLFromSite(
+        outward_date:outward_date,
+        origin: origin,
+        destination: destination)
+        prices = prices.merge(t.prices)
+        progressbar.increment
+    end
+    return prices
+  rescue
+    raise "Couldn't update prices from web. Exiting."
+  end
+end
+
+def save_prices_to_json(date:, origin:, destination:, prices:)
+  data = Hash.new
+  data[:date] = date
+  data[:route] = {origin: origin, destination: destination}
+  data[:prices] = prices
+  begin
+    File.open(DATA_FILEPATH, 'w') do |f|
+      f.write(JSON.pretty_generate(data))
+    end
+    puts "Saved price data to #{DATA_FILEPATH}. Exiting."
+  rescue
+    raise "Couldn't save data to #{DATA_FILEPATH}. Exiting."
+  end
 end
 
 exit run(ARGV)
