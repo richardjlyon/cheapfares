@@ -50,15 +50,19 @@ command :update do |c|
 
   c.action do |global_options,options,args|
 
+    start_date = options[:d]
+    origin = options[:f]
+    destination = options[:t]
+    weeks = options[:w]
     if options[:d] < Date.today
       raise "Can't get fares earlier than today. Exiting."
     end
 
-    message = "Getting #{options[:w]} weeks of prices for #{options[:f]} to #{options[:t]} from #{options[:d]}. Proceed? (y/n)"
+    message = "Getting #{weeks} weeks of prices from #{origin} to #{destination} starting #{start_date}. Proceed? (y/n)"
     exit unless HighLine.agree(message)
 
-    prices = update_prices(origin:options[:f], destination:options[:t], start_date:options[:d], weeks:options[:w])
-    save_prices_to_json(date:options[:d], origin:options[:f], destination:options[:t], prices:prices)
+    prices = update_prices(origin:origin, destination:destination, start_date:start_date, weeks:weeks)
+    save_prices_to_json(date:start_date, origin:origin, destination:destination, prices:prices)
   end
 end
 
