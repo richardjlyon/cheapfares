@@ -11,7 +11,6 @@ include GLI::App
 
 config_filepath = File.expand_path('../../cheapfares.config', __FILE__)
 config = YAML.load_file(config_filepath)
-puts config
 
 DATA_FILEPATH = './prices.json'
 
