@@ -1,13 +1,13 @@
 # Ensure we require the local version and not one we might have installed already
 require File.join([File.dirname(__FILE__),'lib','cheapfares','version.rb'])
-spec = Gem::Specification.new do |s| 
+spec = Gem::Specification.new do |s|
   s.name = 'cheapfares'
   s.version = Cheapfares::VERSION
-  s.author = 'Your Name Here'
-  s.email = 'your@email.address.com'
-  s.homepage = 'http://your.website.com'
+  s.author = 'Richard Lyon'
+  s.email = 'richardlyon@fastmail.com'
+  s.homepage = 'http://www.richardlyon.net'
   s.platform = Gem::Platform::RUBY
-  s.summary = 'A description of your project'
+  s.summary = 'Command line utility for retrieving and reporting cheap rail fares'
   s.files = `git ls-files`.split("
 ")
   s.require_paths << 'lib'
