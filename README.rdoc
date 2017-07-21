@@ -1,6 +1,53 @@
-= cheapfares
+= Cheapfares: Cheap rail fares
 
-Describe your project here
+== Summary
+Cheapfares is a Ruby command line utility for retrieving and displaying rail fare information. Specify start and finish stations, an earliest travel date, and the number of weeks of price information to check. The utility reports the highest and lowest prices in the period, and the dates on which prices are in the bottom quartile.
 
-:include:cheapfares.rdoc
+== Installing
 
+To install Cheapfares, use the following command:
+
+  $gem install cheapfares
+
+== Usage
+
+Cheapfares is a command line tool. To get help, type:
+
+  $cheapfares
+
+For help on a specific command, type:
+
+  $cheapfares -h [command name]
+
+== Sample output
+
+  $ cheapfares report
+
+  FARE DATA:
+  =====================================
+  Dates           : 2017-07-25
+                  : 2017-10-17
+                  : 12 weeks
+  Origin          : EUS
+  Destination     : EDB
+  -------------------------------------
+  Highest         : £71.00 (2017-08-04)
+  Lowest          : £28.00 (2017-09-06)
+  Bottom quartile : £38.75
+  -------------------------------------
+  2017-08-12      : £30.00
+  2017-08-30      : £35.50
+  2017-08-31      : £30.00
+  2017-09-01      : £30.00
+  2017-09-02      : £30.00
+  2017-09-05      : £30.00
+
+  etc.
+
+== Changelog
+
+See {file:CHANGELOG} for a list of changes.
+
+== Licence
+
+Cheapfares © 2017 by Richard Lyon. Cheapfares is licensed under the MIT license except for some files which come from the RDoc/Ruby distributions. Please see the {file:LICENSE} and {file:LEGAL} documents for more information.
