@@ -5,8 +5,13 @@ require 'ruby-progressbar'
 require 'date'
 require 'json'
 require 'cheapfares'
+require 'yaml'
 
 include GLI::App
+
+config_filepath = File.expand_path('../../cheapfares.config', __FILE__)
+config = YAML.load_file(config_filepath)
+puts config
 
 DATA_FILEPATH = './prices.json'
 
@@ -30,15 +35,15 @@ command :update do |c|
                 :arg_name => 'date',
                 :type => Date,
                 :desc => 'Travel date'
-  c.flag :f,    :default_value => 'EUS',
+  c.flag :f,    :default_value => config['origin'],
                 :arg_name => 'from',
                 :type => String,
                 :desc => 'Originating station'
-  c.flag :t,    :default_value => 'EDB',
+  c.flag :t,    :default_value => config['destination'],
                 :arg_name => 'to',
                 :type => String,
                 :desc => 'Destination station'
-  c.flag :w,    :default_value => 12,
+  c.flag :w,    :default_value => config['weeks'],
                 :arg_name => 'weeks',
                 :type => Integer,
                 :desc => 'Weeks of data to get'
