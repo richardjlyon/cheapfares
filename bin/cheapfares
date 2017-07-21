@@ -102,8 +102,8 @@ on_error do |exception|
   true
 end
 
-def get_prices(origin:, destination:, start_date:, weeks:)
 # Update prices from trainline
+def update_prices(origin:, destination:, start_date:, weeks:)
   progressbar = ProgressBar.create(title:"Weeks:", format:"%t |%B| %c", starting_at:0, total:weeks)
   t = Cheapfares::Trainline.new
   prices = {}
