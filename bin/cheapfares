@@ -6,6 +6,7 @@ require 'date'
 require 'json'
 require 'cheapfares'
 require 'yaml'
+require 'pp'
 
 include GLI::App
 
@@ -109,6 +110,30 @@ command :report do |c|
     end
 
     # pp lowest_fare_hash
+  end
+end
+
+desc 'List station codes'
+command :list do |c|
+  c.flag :c,    :arg_name => 'search term',
+                :type => String,
+                :desc => 'Station name contains the search term'
+
+  c.action do |global_options,options,args|
+    stationcode_filepath = File.expand_path('../../station_codes.yaml', __FILE__)
+    stationcode_hash = YAML.load_file(stationcode_filepath)
+    message = "\nStations"
+    if options[:c]
+      result_hash = stationcode_hash.select { |code, station| station.downcase.include? options[:c].downcase}
+      message += " containing '#{options[:c]}'"
+    else
+      result_hash = stationcode_hash
+    end
+    message += (":\n" +'-' * message.length)
+    puts message
+    result_hash.each do |code, station|
+      puts "#{code}: #{station}"
+    end
   end
 end
 
