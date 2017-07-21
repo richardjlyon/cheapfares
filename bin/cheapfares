@@ -74,6 +74,22 @@ command :update do |c|
   end
 end
 
+desc 'Describe datafile'
+long_desc 'Display date and journey details of datafile (if it exists)'
+command :describe do |c|
+
+  c.action do |global_options,options,args|
+    data_hash = load_data_from_JSON
+    weeks = data_hash['prices'].keys.count / 7
+    puts "\nData file:\n===============\n"
+    puts "Date :#{data_hash['date']}"
+    puts "From :#{data_hash['route']['origin']}"
+    puts "To   :#{data_hash['route']['destination']}"
+    puts "Weeks:#{weeks}"
+  end
+
+end
+
 desc 'Describe list here'
 arg_name 'Describe arguments to list here'
 command :list do |c|
@@ -140,6 +156,16 @@ def save_prices_to_json(date:, origin:, destination:, prices:)
     puts "Saved price data to #{DATA_FILEPATH}. Exiting."
   rescue
     raise "Couldn't save data to #{DATA_FILEPATH}. Exiting."
+  end
+end
+
+# Load data from JSON
+def load_data_from_JSON
+  begin
+    file = File.read(DATA_FILEPATH)
+    return JSON.parse(file)
+  rescue
+    Puts "Can't load datafile #{DATA_FILEPATH}. Try 'update'. Exiting."
   end
 end
 
