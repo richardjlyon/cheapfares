@@ -4,14 +4,7 @@ require 'highline/import'
 require 'ruby-progressbar'
 require 'date'
 require 'json'
-# begin # XXX: Remove this begin/rescue before distributing your app
 require 'cheapfares'
-# rescue LoadError
-#   STDERR.puts "In development, you need to use `bundle exec bin/cheapfares` to run your app"
-#   STDERR.puts "At install-time, RubyGems will make sure lib, etc. are in the load path"
-#   STDERR.puts "Feel free to remove this message from bin/cheapfares now"
-#   exit 64
-# end
 
 include GLI::App
 
