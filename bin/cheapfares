@@ -24,9 +24,6 @@ end
 arg_name 'Origin, destination, earliest date, weeks to get'
 command :update do |c|
 
-  # c.desc "Dry run;don't retrive data"
-  # c.switch :dry
-
   c.flag :d,    :default_value => Date.today,
                 :arg_name => 'date',
                 :type => Date,
