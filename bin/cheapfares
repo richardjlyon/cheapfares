@@ -6,6 +6,7 @@ require 'ruby-progressbar'
 require 'date'
 require 'json'
 require 'yaml'
+require 'spreadsheet'
 require 'pp'
 
 include GLI::App
@@ -13,7 +14,8 @@ include GLI::App
 config_filepath = File.expand_path('../../cheapfares.config', __FILE__)
 config = YAML.load_file(config_filepath)
 
-DATA_FILEPATH = './prices.json'
+JSON_FILEPATH = './prices.json'
+EXCEL_FILEPATH = './prices.xls'
 
 program_desc 'A utility for finding cheap rail fares'
 
@@ -211,27 +213,48 @@ def update_prices(origin:, destination:, start_date:, weeks:)
   end
 end
 
-def save_prices_to_json(date:, origin:, destination:, prices:)
+def save_prices_to_excel(capture_date:, origin:, destination:, prices:)
+  begin
+    book = Spreadsheet::Workbook.new
+    sheet1 = book.create_worksheet :name => 'Prices'
+    sheet1[0,0] = "Prices for #{origin} to #{destination}"
+    sheet1[1,0] = "Captured: #{capture_date}"
+    sheet1.row(2).concat %w{Date Lowest Highest}
+
+    prices.each_with_index do |(date, price_hash), i|
+      min_price = price_hash.values.compact.min
+      max_price = price_hash.values.compact.max
+      sheet1.row(i+3).push date, min_price, max_price
+    end
+
+    book.write EXCEL_FILEPATH
+    puts "Saved price data to #{EXCEL_FILEPATH}"
+  rescue
+    puts "Can't save data to #{EXCEL_FILEPATH}"
+  end
+end
+
+def save_prices_to_json(capture_date:, origin:, destination:, prices:)
   data = Hash.new
   data[:capture_date] = capture_date
   data[:route] = {origin: origin, destination: destination}
   data[:prices] = prices
   begin
-    File.open(DATA_FILEPATH, 'w') do |f|
+    File.open(JSON_FILEPATH, 'w') do |f|
       f.write(JSON.pretty_generate(data))
     end
-    puts "Saved price data to #{DATA_FILEPATH}. Exiting."
+    puts "Saved price data to #{JSON_FILEPATH}"
   rescue
-    raise "Couldn't save data to #{DATA_FILEPATH}. Exiting."
+    raise "Couldn't save data to #{JSON_FILEPATH}"
   end
 end
 
 def load_prices_from_JSON
   begin
-    file = File.read(DATA_FILEPATH)
+    file = File.read(JSON_FILEPATH)
     return JSON.parse(file)
   rescue
-    Puts "Can't load datafile #{DATA_FILEPATH}. Try 'update'. Exiting."
+    Puts "Can't load datafile #{JSON_FILEPATH}. Try 'update'. Exiting."
   end
 end
 
