@@ -80,21 +80,43 @@ command :describe do |c|
 
   c.action do |global_options,options,args|
     data_hash = load_data_from_JSON
-    weeks = data_hash['prices'].keys.count / 7
-    puts "\nData file:\n===============\n"
-    puts "Date :#{data_hash['date']}"
-    puts "From :#{data_hash['route']['origin']}"
-    puts "To   :#{data_hash['route']['destination']}"
-    puts "Weeks:#{weeks}"
+    puts "\nMetadata:"
+    generate_description(data_hash:data_hash)
   end
 
 end
 
-desc 'Describe list here'
+desc 'Display fares information'
 arg_name 'Describe arguments to list here'
-command :list do |c|
+command :fares do |c|
   c.action do |global_options,options,args|
-    puts "list command ran"
+    data_hash = load_data_from_JSON
+    puts "\nFARE DATA:"
+    generate_description(data_hash:data_hash)
+
+    # generate dictionary of date objects and lowest price on that day
+    prices = data_hash['prices']
+    lowest_fare_hash = Hash.new
+    prices.each do |day_string, price_hash|
+      day = Date.parse(day_string)
+      min_price = price_hash.values.compact.min
+      lowest_fare_hash[day] = min_price
+    end
+
+    worst_fare = lowest_fare_hash.max_by {|date, price| price} # [date, price]
+    best_fare = lowest_fare_hash.min_by {|date, price| price}  # [date, price]
+    bottom_quartile_fare = (worst_fare[1] - best_fare[1])/4.0 + best_fare[1]
+    bottom_quartile_hash = lowest_fare_hash.select{|date,price| price <= bottom_quartile_fare}
+
+    puts "Highest         : £#{'%.02f' % worst_fare[1]} (#{worst_fare[0]})"
+    puts "Lowest          : £#{'%.02f' % best_fare[1]} (#{best_fare[0]})"
+    puts "Bottom quartile : £#{'%.02f' % bottom_quartile_fare}"
+    puts "-------------------------------------"
+    bottom_quartile_hash.each do |day, price|
+      puts "#{day}      : £#{'%.02f' % price}"
+    end
+
+    # pp lowest_fare_hash
   end
 end
 
@@ -167,6 +189,19 @@ def load_data_from_JSON
   rescue
     Puts "Can't load datafile #{DATA_FILEPATH}. Try 'update'. Exiting."
   end
+end
+
+def generate_description(data_hash:)
+  date = Date.parse(data_hash['date'])
+  weeks = data_hash['prices'].keys.count / 7
+  puts "====================================="
+  puts "Dates           : #{date}"
+  puts "                : #{date + 7 * weeks}"
+  puts "                : #{weeks} weeks"
+  puts "Origin          : #{data_hash['route']['origin']}"
+  puts "Destination     : #{data_hash['route']['destination']}"
+  puts "-------------------------------------"
+
 end
 
 exit run(ARGV)
