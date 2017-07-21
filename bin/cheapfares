@@ -64,12 +64,13 @@ command :update do |c|
       raise "Can't get fares earlier than today. Exiting."
     end
 
+    puts options[:dry]
+
     message = "Getting #{options[:w]} weeks of prices for #{options[:f]} to #{options[:t]} from #{options[:d]}. Proceed? (y/n)"
     exit unless HighLine.agree(message)
 
     prices = update_prices(origin:options[:f], destination:options[:t], start_date:options[:d], weeks:options[:w])
     save_prices_to_json(date:options[:d], origin:options[:f], destination:options[:t], prices:prices)
-
   end
 end
 
@@ -107,16 +108,19 @@ def update_prices(origin:, destination:, start_date:, weeks:)
   progressbar = ProgressBar.create(title:"Weeks:", format:"%t |%B| %c", starting_at:0, total:weeks)
   t = Cheapfares::Trainline.new
   prices = {}
+
   begin
     (0..weeks-1).each do |week|
       outward_date = start_date + week * 7
+
       t.fetchPricesLFromSite(
         outward_date:outward_date,
         origin: origin,
         destination: destination)
-        prices = prices.merge(t.prices)
-        progressbar.increment
+      prices = prices.merge(t.prices)
+      progressbar.increment
     end
+
     return prices
   rescue
     raise "Couldn't update prices from web. Exiting."
