@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 require 'gli'
+require 'cheapfares'
 require 'highline/import'
 require 'ruby-progressbar'
 require 'date'
 require 'json'
-require 'cheapfares'
 require 'yaml'
 require 'pp'
 
@@ -53,8 +53,6 @@ command :update do |c|
     if options[:d] < Date.today
       raise "Can't get fares earlier than today. Exiting."
     end
-
-    puts options[:dry]
 
     message = "Getting #{options[:w]} weeks of prices for #{options[:f]} to #{options[:t]} from #{options[:d]}. Proceed? (y/n)"
     exit unless HighLine.agree(message)
