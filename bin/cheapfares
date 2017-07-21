@@ -180,6 +180,7 @@ end
 def generate_description(data_hash:)
   date = Date.parse(data_hash['date'])
   weeks = data_hash['prices'].keys.count / 7
+  puts "Version #{Cheapfares::VERSION}"
   puts "====================================="
   puts "Dates           : #{date}"
   puts "                : #{date + 7 * weeks}"
