@@ -96,22 +96,11 @@ command :report do |c|
     puts "\nFARE DATA:"
     generate_description(data_hash:data_hash)
 
-    # generate dictionary of date objects and lowest price on that day
-    prices = data_hash['prices']
-    lowest_fare_hash = Hash.new
-    prices.each do |day_string, price_hash|
-      day = Date.parse(day_string)
-      min_price = price_hash.values.compact.min
-      lowest_fare_hash[day] = min_price
-    end
-
-    # remove nil values to protect maths
-    lowest_fare_hash.delete_if { |day, price| price.nil? }
-
-    worst_fare = lowest_fare_hash.max_by {|date, price| price} # [date, price]
-    best_fare = lowest_fare_hash.min_by {|date, price| price}  # [date, price]
+    lowest_fares_hash = get_lowest_fares(fares_hash:data_hash['prices'])
+    worst_fare = lowest_fares_hash.max_by {|date, price| price} # [date, price]
+    best_fare = lowest_fares_hash.min_by {|date, price| price}  # [date, price]
     bottom_quartile_fare = (worst_fare[1] - best_fare[1])/4.0 + best_fare[1]
-    bottom_quartile_hash = lowest_fare_hash.select{|date,price| price <= bottom_quartile_fare}
+    bottom_quartile_hash = lowest_fares_hash.select{|date,price| price <= bottom_quartile_fare}
 
     puts "Highest         : £#{'%.02f' % worst_fare[1]} (#{worst_fare[0]})"
     puts "Lowest          : £#{'%.02f' % best_fare[1]} (#{best_fare[0]})"
@@ -168,6 +157,34 @@ on_error do |exception|
   # Error logic here
   # return false to skip default error handling
   true
+end
+
+# Extract the lowest fare on each day and return as new hash
+# @param [Hash] prices { "2017-07-18" => { "early_morning" => 71.0, "morning" => etc. }}
+# @return [Hash] lowest_fares {"2017-07-18" => 50.0, "2017-07-19" => 75.0, etc. }
+def get_lowest_fares(fares_hash:)
+  lowest_fares_hash = Hash.new
+  fares_hash.each do |day_string, price_hash|
+    day = Date.parse(day_string)
+    min_price = price_hash.values.compact.min
+    lowest_fares_hash[day] = min_price
+  end
+  # remove nil values to protect maths
+  lowest_fares_hash.delete_if { |day, price| price.nil? }
+  return lowest_fares_hash
+end
+
+# Extract the highest fare on each day and return as new hash
+# @param [Hash] prices { "2017-07-18" => { "early_morning" => 71.0, "morning" => etc. }}
+# @return [Hash] highest_fares {"2017-07-18" => 71.0, "2017-07-19" => 75.0, etc. }
+def get_highest_fares(fares_hash:)
+  highest_fare_hash = Hash.new
+  fares_hash.each do |day_string, price_hash|
+    day = Date.parse(day_string)
+    max_price = price_hash.values.compact.max
+    highest_fare_hash[day] = max_price
+  end
+  return highest_fare_hash
 end
 
 # Update prices from trainline
