@@ -1,7 +1,7 @@
 = Cheapfares: Cheap rail fares
 
 == Summary
-Cheapfares is a Ruby command line utility for retrieving and displaying rail fare information. Specify start and finish stations, an earliest travel date, and the number of weeks of price information to check. The utility reports the highest and lowest prices in the period, and the dates on which prices are in the bottom quartile. Data is saved to an excel spreadsheet.
+Cheapfares is a Ruby command line utility for retrieving and displaying UK rail fare information. Specify start and finish stations, an earliest travel date, and the number of weeks of price information to check. The utility reports the highest and lowest prices in the period, and the dates on which prices are in the bottom quartile. Data is saved to an excel spreadsheet.
 
 == Installing
 
