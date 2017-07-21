@@ -67,7 +67,7 @@ command :update do |c|
     message = "Getting #{options[:w]} weeks of prices for #{options[:f]} to #{options[:t]} from #{options[:d]}. Proceed? (y/n)"
     exit unless HighLine.agree(message)
 
-    prices = get_prices(origin:options[:f], destination:options[:t], start_date:options[:d], weeks:options[:w])
+    prices = update_prices(origin:options[:f], destination:options[:t], start_date:options[:d], weeks:options[:w])
     save_prices_to_json(date:options[:d], origin:options[:f], destination:options[:t], prices:prices)
 
   end
