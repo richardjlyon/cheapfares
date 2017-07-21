@@ -21,6 +21,9 @@ For help on a specific command, type:
 
 == Sample output
 
+  $ cheapfares update
+  Saved price data to ./prices.json. Exiting.
+
   $ cheapfares report
 
   FARE DATA:
@@ -43,6 +46,14 @@ For help on a specific command, type:
   2017-09-05      : £30.00
 
   etc.
+
+  $ cheapfares list -c edinburgh
+
+  Stations containing 'Edinburgh':
+  --------------------------------
+  EDB: Edinburgh
+  EGY: Edinburgh Gateway
+  EDP: Edinburgh Park
 
 == Changelog
 
