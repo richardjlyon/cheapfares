@@ -21,13 +21,6 @@ accept(Date) do |string|
   Date.parse(string)
 end
 
-desc 'Describe some flag here'
-default_value 'the default'
-arg_name 'The name of the argument'
-flag [:f,:flagname]
-
-desc 'Update prices'
-long_desc 'Update prices from website'
 arg_name 'Origin, destination, earliest date, weeks to get'
 command :update do |c|
 
