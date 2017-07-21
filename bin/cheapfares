@@ -62,7 +62,7 @@ long_desc 'Display date and journey details of datafile (if it exists)'
 command :describe do |c|
 
   c.action do |global_options,options,args|
-    data_hash = load_data_from_JSON
+    data_hash = load_prices_from_JSON
     puts "\nMetadata:"
     generate_description(data_hash:data_hash)
   end
@@ -73,7 +73,7 @@ desc 'Display fares information'
 arg_name 'Describe arguments to list here'
 command :fares do |c|
   c.action do |global_options,options,args|
-    data_hash = load_data_from_JSON
+    data_hash = load_prices_from_JSON
     puts "\nFARE DATA:"
     generate_description(data_hash:data_hash)
 
@@ -165,7 +165,7 @@ def save_prices_to_json(date:, origin:, destination:, prices:)
 end
 
 # Load data from JSON
-def load_data_from_JSON
+def load_prices_from_JSON
   begin
     file = File.read(DATA_FILEPATH)
     return JSON.parse(file)
