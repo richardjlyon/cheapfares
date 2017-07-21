@@ -5,6 +5,7 @@ require 'ruby-progressbar'
 require 'date'
 require 'json'
 require 'cheapfares'
+require 'pp'
 
 include GLI::App
 
@@ -87,6 +88,9 @@ command :report do |c|
       min_price = price_hash.values.compact.min
       lowest_fare_hash[day] = min_price
     end
+
+    # remove nil values to protect maths
+    lowest_fare_hash.delete_if { |day, price| price.nil? }
 
     worst_fare = lowest_fare_hash.max_by {|date, price| price} # [date, price]
     best_fare = lowest_fare_hash.min_by {|date, price| price}  # [date, price]
