@@ -16,3 +16,4 @@
 /cache/
 *.gem
 Gemfile.lock
+prices.json
