@@ -9,6 +9,12 @@ To install Cheapfares, use the following command:
 
   $gem install cheapfares
 
+Set defaults in 'cheapfares.config':
+
+  origin:       'EUS' # default departure station
+  destination:  'EDB' # default destination station
+  weeks:         12   # default weeks of information to retrieve
+
 == Usage
 
 Cheapfares is a command line tool. To get help, type:
