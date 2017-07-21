@@ -110,7 +110,6 @@ def update_prices(origin:, destination:, start_date:, weeks:)
   begin
     (0..weeks-1).each do |week|
       outward_date = start_date + week * 7
-      # puts "Week #{week+1}: #{outward_date}"
       t.fetchPricesLFromSite(
         outward_date:outward_date,
         origin: origin,
