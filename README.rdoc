@@ -1,0 +1,6 @@
+= cheapfares
+
+Describe your project here
+
+:include:cheapfares.rdoc
+
