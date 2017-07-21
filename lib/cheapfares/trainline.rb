@@ -7,7 +7,7 @@ module Cheapfares
   class Trainline
 
     ROOT_URL = 'https://www.thetrainline.com/farefinder/BestFares.aspx?'
-    CACHE_FILEPATH = '/Users/richardlyon/Library/Mobile Documents/com~apple~CloudDocs/Documents/Personal/Coding/Ruby/development/rjl-cheapfares/cache/trainline_oneway.html'
+    CACHE_FILEPATH = File.join(File.dirname(__FILE__), '/cache/trainline.html')
 
     def initialize
       @travel_prices = Hash.new { |hash, key| hash[key] = Hash.new() }
