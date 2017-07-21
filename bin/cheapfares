@@ -5,7 +5,6 @@ require 'ruby-progressbar'
 require 'date'
 require 'json'
 require 'cheapfares'
-require 'pp'
 
 include GLI::App
 
