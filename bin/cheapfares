@@ -21,6 +21,8 @@ accept(Date) do |string|
   Date.parse(string)
 end
 
+desc 'Update fares'
+long_desc 'Retrieve new fare information from the internet'
 arg_name 'Origin, destination, earliest date, weeks to get'
 command :update do |c|
 
@@ -57,7 +59,7 @@ command :update do |c|
   end
 end
 
-desc 'Describe datafile'
+desc 'Describe fare datafile'
 long_desc 'Display date and journey details of datafile (if it exists)'
 command :describe do |c|
 
@@ -69,9 +71,9 @@ command :describe do |c|
 
 end
 
-desc 'Display fares information'
-arg_name 'Describe arguments to list here'
-command :fares do |c|
+desc 'Report fares information'
+command :report do |c|
+
   c.action do |global_options,options,args|
     data_hash = load_prices_from_JSON
     puts "\nFARE DATA:"
@@ -148,7 +150,6 @@ def update_prices(origin:, destination:, start_date:, weeks:)
   end
 end
 
-# Save prices to local storage
 def save_prices_to_json(date:, origin:, destination:, prices:)
   data = Hash.new
   data[:date] = date
@@ -164,7 +165,6 @@ def save_prices_to_json(date:, origin:, destination:, prices:)
   end
 end
 
-# Load data from JSON
 def load_prices_from_JSON
   begin
     file = File.read(DATA_FILEPATH)
@@ -184,7 +184,6 @@ def generate_description(data_hash:)
   puts "Origin          : #{data_hash['route']['origin']}"
   puts "Destination     : #{data_hash['route']['destination']}"
   puts "-------------------------------------"
-
 end
 
 exit run(ARGV)
