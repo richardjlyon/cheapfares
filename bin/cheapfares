@@ -254,7 +254,7 @@ def load_prices_from_JSON
     file = File.read(JSON_FILEPATH)
     return JSON.parse(file)
   rescue
-    Puts "Can't load datafile #{JSON_FILEPATH}. Try 'update'. Exiting."
+    puts "Can't load datafile #{JSON_FILEPATH}. Try 'update'. Exiting."
   end
 end
 
