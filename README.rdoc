@@ -9,7 +9,7 @@ To install Cheapfares, use the following command:
 
   $gem install cheapfares
 
-Set defaults in 'cheapfares.config':
+Set defaults in `cheapfares.config`:
 
   origin:       'EUS' # default departure station
   destination:  'EDB' # default destination station
